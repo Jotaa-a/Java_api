@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.sql.ast.tree.expression.Summarization;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/producto")
 @RequiredArgsConstructor
+@Validated
 public class ProductoController {
     private final ProductoService productoService;
 
@@ -32,7 +35,7 @@ public class ProductoController {
             }
     )
     @PostMapping
-    public ResponseEntity<ProductoReponse> crear(@RequestBody ProductoRequest dto){
+    public ResponseEntity<ProductoReponse> crear(@Valid @RequestBody ProductoRequest dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.guardar(dto));
     }
 
@@ -53,7 +56,7 @@ public class ProductoController {
 
     @Operation(summary = "Actualiza los productos por id", description = "Requiere una variable de busqueda de tipo id de la siguiente manera: http://localhost:8080/api/producto/1")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoReponse> actualizar(@PathVariable Long id, @RequestBody ProductoRequest dto){
+    public ResponseEntity<ProductoReponse> actualizar(@PathVariable Long id,@Valid  @RequestBody ProductoRequest dto){
         return ResponseEntity.ok(productoService.actualizar(id, dto));
     }
 

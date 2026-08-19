@@ -24,6 +24,6 @@ public class Producto {
     @Column(name = "precio_compra", nullable = false)
     private BigDecimal precioCompra;
 
-    @Column(name = "precio_vemta", nullable = false)
+    @Column(name = "precio_venta", nullable = false)
     private BigDecimal precioVenta;
 }

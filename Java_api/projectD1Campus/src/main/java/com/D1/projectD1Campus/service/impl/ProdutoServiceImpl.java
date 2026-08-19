@@ -2,10 +2,12 @@ package com.D1.projectD1Campus.service.impl;
 
 import com.D1.projectD1Campus.dto.request.ProductoRequest;
 import com.D1.projectD1Campus.dto.response.ProductoReponse;
+import com.D1.projectD1Campus.excepcion.BusinessRuleException;
 import com.D1.projectD1Campus.mapper.ProductoMapper;
 import com.D1.projectD1Campus.modelo.Producto;
 import com.D1.projectD1Campus.repositorio.ProductoRepository;
 import com.D1.projectD1Campus.service.ProductoService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,11 @@ public class ProdutoServiceImpl implements ProductoService {
     @Override
     public ProductoReponse guardar(ProductoRequest dto) {
         Producto producto = productoMapper.dtoToEntity(dto);
+        if(producto.getPrecioCompra().compareTo(producto.getPrecioVenta()) > 0){
+            throw  new BusinessRuleException(
+                    "El precio de compra no puede superar el precio de venta"
+            );
+        }
         return productoMapper.entityToDto(productoRepository.save(producto));
     }
 
@@ -32,20 +39,25 @@ public class ProdutoServiceImpl implements ProductoService {
 
     @Override
     public ProductoReponse obtenerPorId(Long id) {
-        Producto producto = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("No se encontró el producto con id"));
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No se encontró el producto con id"));
         return productoMapper.entityToDto(producto);
     }
 
     @Override
     public ProductoReponse actualizar(Long id, ProductoRequest dto) {
-        Producto producto = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("No se encontró n9inguna entidad"));
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No se encontró n9inguna entidad"));
         productoMapper.updateEntityToDto(producto, dto);
+        if(producto.getPrecioCompra().compareTo(producto.getPrecioVenta()) > 0){
+            throw new BusinessRuleException(
+                    "El precio de compra no puede ser mayor al precio de venta"
+            );
+        }
         return productoMapper.entityToDto(productoRepository.save(producto));
     }
 
     @Override
     public void eliminarProducto(Long id) {
-        Producto producto = productoRepository.findById(id).orElseThrow(() -> new RuntimeException("No se encontró ningun producto"));
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No se encontró ningun producto"));
         productoRepository.delete(producto);
     }
 

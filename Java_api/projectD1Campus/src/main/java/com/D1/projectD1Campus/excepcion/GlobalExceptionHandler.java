@@ -1,0 +1,91 @@
+package com.D1.projectD1Campus.excepcion;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice // anotacion que captura errores
+public class GlobalExceptionHandler {
+    //Cunado no existe una respuesta
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerNotFound(EntityNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        "RESOURCE NOT FOUND"
+                ));
+    }
+
+    /*CAPTURA los valid con NotNull, NotBlank y todo lo usado en las validaciones de DTO*/
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handlerValidationErrors(MethodArgumentNotValidException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("errorCode", "VALIDATION_FAILED");
+
+        Map<String, String> errors = new HashMap<>();
+        for(FieldError error: ex.getBindingResult().getFieldErrors()){
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        response.put("errores", errors);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    };
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handlerGenericErrors(Exception e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new ErrorResponse(LocalDateTime.now(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "Error interno del servidor",
+                                "ERROR")
+        );
+    };
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerNotFound(NoHandlerFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(LocalDateTime.now(),
+                        HttpStatus.NOT_FOUND.value(),
+                        "Ruta no encontrada o incompleta",
+                        "ERROR_NO_HANDLER_FOUND"
+                ));
+    };
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handlerParsingErrors(HttpMessageNotReadableException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "El cuerpo de la solicitud no es valido",
+                "BAD_REQUEST"
+                ));
+    }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<ErrorResponse> hanleBusinessRuleException (BusinessRuleException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        "BUSINESS_RULE_VIOLATION"
+                )
+        );
+    }
+}

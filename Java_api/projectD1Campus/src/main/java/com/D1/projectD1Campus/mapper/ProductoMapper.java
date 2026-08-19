@@ -21,7 +21,7 @@ public class ProductoMapper {
         if(dto==null) return null;
         Producto producto = new Producto();
         producto.setNombre(dto.nombre());
-        producto.setDescripcion(dto.descipcion());
+        producto.setDescripcion(dto.descripcion());
         producto.setPrecioCompra(dto.precioCompra());
         producto.setPrecioVenta(dto.precioVenta());
         return producto;
@@ -30,7 +30,7 @@ public class ProductoMapper {
     public void updateEntityToDto(Producto producto, ProductoRequest dto){
         if(dto==null || producto == null) return;
         producto.setNombre(dto.nombre());
-        producto.setDescripcion(dto.descipcion());
+        producto.setDescripcion(dto.descripcion());
         producto.setPrecioCompra(dto.precioCompra());
         producto.setPrecioVenta(dto.precioVenta());
     }

@@ -6,10 +6,12 @@ import com.D1.projectD1Campus.service.VentaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,12 +21,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/venta")
 @RequiredArgsConstructor
+@Validated
 public class VentaController {
     private final VentaService ventaService;
 
     @Operation(summary = "Crear nueva venta", description = "Requiere un request point o un json para ingresar la venta")
     @PostMapping
-    public ResponseEntity<VentaResponse> crear(@RequestBody VentaRequest dto){
+    public ResponseEntity<VentaResponse> crear(@Valid @RequestBody VentaRequest dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(ventaService.guardar(dto));
     }
 
@@ -42,7 +45,7 @@ public class VentaController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar venta por ID", description = "Requiere id Venta para actualizar datos")
-    public ResponseEntity<VentaResponse> actualizar(@PathVariable Long id, @RequestBody VentaRequest dto){
+    public ResponseEntity<VentaResponse> actualizar(@PathVariable Long id, @Valid  @RequestBody VentaRequest dto){
         return ResponseEntity.ok(ventaService.actualizar(id, dto));
     }
 

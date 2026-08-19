@@ -5,9 +5,11 @@ import com.D1.projectD1Campus.dto.response.DetalleVentaResponse;
 import com.D1.projectD1Campus.service.DetalleVentaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -17,12 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/detalle")
 @RequiredArgsConstructor
+@Validated
 public class DetalleVentaController {
     private final DetalleVentaService detalleVentaService;
 
     @Operation(summary = "Ingreso datos Detalle de venta", description = "Requiere un request o un json para ingresar datos")
     @PostMapping
-    public ResponseEntity<DetalleVentaResponse> crear(@RequestBody DetalleVentaRequest dto){
+    public ResponseEntity<DetalleVentaResponse> crear(@Valid @RequestBody DetalleVentaRequest dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(detalleVentaService.crear(dto));
     }
 
@@ -40,7 +43,7 @@ public class DetalleVentaController {
 
     @Operation(summary = "Actualiza los detalle por id", description = "Requiere una variable de busqueda de tipo id")
     @PutMapping("/{id}")
-    public ResponseEntity<DetalleVentaResponse> actualizar(@PathVariable Long id, @RequestBody DetalleVentaRequest dto){
+    public ResponseEntity<DetalleVentaResponse> actualizar(@PathVariable Long id, @Valid @RequestBody DetalleVentaRequest dto){
         return ResponseEntity.ok(detalleVentaService.actualizar(id, dto));
     }
 
