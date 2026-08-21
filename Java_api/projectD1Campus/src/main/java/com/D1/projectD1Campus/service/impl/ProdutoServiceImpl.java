@@ -45,7 +45,7 @@ public class ProdutoServiceImpl implements ProductoService {
 
     @Override
     public ProductoReponse actualizar(Long id, ProductoRequest dto) {
-        Producto producto = productoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No se encontró n9inguna entidad"));
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("No se encontró ninguna entidad"));
         productoMapper.updateEntityToDto(producto, dto);
         if(producto.getPrecioCompra().compareTo(producto.getPrecioVenta()) > 0){
             throw new BusinessRuleException(

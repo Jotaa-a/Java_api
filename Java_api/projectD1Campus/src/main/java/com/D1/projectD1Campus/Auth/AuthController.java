@@ -21,8 +21,8 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody LoginRequest request) {
 
-        if (request.username().equals("Jotaa") &&
-                request.password().equals("1098JotaMan")) {
+        if (request.username().equals("admin") &&
+                request.password().equals("1234")) {
 
             String token = jwtService.generateToken(request.username());
             /**
